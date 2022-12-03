@@ -24,5 +24,6 @@ int ToIndex(char action) => action switch
 {
     'A' or 'X' => 0,
     'B' or 'Y' => 1,
-    'C' or 'Z' => 2
+    'C' or 'Z' => 2,
+    _ => -1
 };
