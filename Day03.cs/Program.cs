@@ -1,14 +1,23 @@
 ﻿var lines = File.ReadAllLines("input.txt");
 
+int setCount = 3;
+
 
 int totalPriority = 0;
+int badgePriority = 0;
 
-foreach (string line in lines)
+for (int i = 0; i < lines.Length; i++)
 {
-    string left = line.Substring(0, line.Length / 2);
-    string right = line.Substring(line.Length / 2);
+    string[] splitBackpacks = { lines[i].Substring(0, lines[i].Length / 2), lines[i].Substring(lines[i].Length / 2) };
 
-    totalPriority += GetValueFromCharacter(FindCommonCharacter(left, right));
+    totalPriority += GetValueFromCharacter(FindCommonCharacter(splitBackpacks));
+
+    if ((i + 1) % setCount == 0)
+    {
+        var lastSet = new ArraySegment<string>(lines, i - setCount + 1, setCount);
+        badgePriority += GetValueFromCharacter(FindCommonCharacter(lastSet.ToArray()));
+    }
+
 
     // Console.WriteLine(line);
     // Console.WriteLine(left);
@@ -18,16 +27,22 @@ foreach (string line in lines)
     // Console.WriteLine();
 }
 
-Console.WriteLine($"Total Priority: {totalPriority}");
+Console.WriteLine($"Total Priority when two compartments per backpack: {totalPriority}");
+Console.WriteLine($"Total Priority when one backpack per three elves: {badgePriority}");
+
+
+char FindCommonCharacter(string[] compartments)
+{
+    if (compartments.Length == 0) return '-';
+    int matchesRequired = compartments.Length - 1;
+
+    return compartments[0]
+        .FirstOrDefault(c => compartments.Skip(1).Count(s => s.Contains(c)) == matchesRequired);
+}
 
 
 
 
-
-
-
-
-char FindCommonCharacter(string left, string right) => left.Where(c => right.Contains(c)).FirstOrDefault();
 int GetValueFromCharacter(char character) => character switch
 {
     >= 'a' and <= 'z' => (int)character - 96,
