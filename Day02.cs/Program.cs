@@ -1,32 +1,28 @@
 ﻿var lines = System.IO.File.ReadAllLines("input.txt").ToList();
 
 // First Index = Opponent, Second Index = Me
-int[, ] results = { { 4, 8, 3 }, { 1, 5, 9 }, { 7, 2, 6 } };
-
-
-Console.WriteLine(lines.Sum(l => CalcScore(l)));
-
+int[,] mapToTool = { { 4, 8, 3 }, { 1, 5, 9 }, { 7, 2, 6 } };
+int[,] mapToResult = { { 3, 4, 8 }, { 1, 5, 9 }, { 2, 6, 7 } };
 
 
 
-
+Console.WriteLine(lines.Sum(l => CalcScoreToTool(l)));
+Console.WriteLine(lines.Sum(l => CalcScoreToResult(l)));
 
 /////
-int CalcScore(string match) =>  results[
-        (int)ToAction(match.Split(" ")[0].Trim()[0]),
-        (int)ToAction(match.Split(" ")[1].Trim()[0])
+int CalcScoreToTool(string match) => mapToTool[
+        ToIndex(match.Split(" ")[0].Trim()[0]),
+        ToIndex(match.Split(" ")[1].Trim()[0])
     ];
 
-Actions ToAction(char action) => action switch
-{
-    'A' or 'X' => Actions.Rock,
-    'B' or 'Y' => Actions.Paper,
-    'C' or 'Z' => Actions.Scissors
-};
+int CalcScoreToResult(string match) => mapToResult[
+        ToIndex(match.Split(" ")[0].Trim()[0]),
+        ToIndex(match.Split(" ")[1].Trim()[0])
+    ];
 
-enum Actions
+int ToIndex(char action) => action switch
 {
-    Rock = 0,
-    Paper = 1,
-    Scissors = 2
-}
+    'A' or 'X' => 0,
+    'B' or 'Y' => 1,
+    'C' or 'Z' => 2
+};
