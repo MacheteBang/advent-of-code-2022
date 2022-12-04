@@ -13,5 +13,13 @@ public class Assignment
     {
         return (LowerBound <= otherAssignment.LowerBound && UpperBound >= otherAssignment.UpperBound);
     }
+    public bool AnyOverlaps(Assignment otherAssignment)
+    {
+        if (FullyOverlaps(otherAssignment)) return true;
+        if (LowerBound >= otherAssignment.LowerBound && LowerBound <= otherAssignment.UpperBound) return true;
+        if (UpperBound >= otherAssignment.LowerBound && UpperBound <= otherAssignment.UpperBound) return true;
+
+        return false;
+    }
 
 }
