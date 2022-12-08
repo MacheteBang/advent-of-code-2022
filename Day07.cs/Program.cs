@@ -36,8 +36,18 @@ for (int i = 0; i < lines.Length; i++)
 var directorySizes = directories
     .Select(d => new { Directory = d, Size = files.Where(f => f.ParentHierarchy.StartsWith(d)).Sum(f => f.Size) });
 
-
 Console.WriteLine(directorySizes.Where(d => d.Size <= 100000).Sum(d => d.Size));
-Console.WriteLine();
-
 // 847705 --> NO
+
+/////
+
+int total = 70000000;
+int required = 30000000;
+int currentUsedSpace = directorySizes.First(d => d.Directory == "/.").Size;
+int currentFreeSpace = total - currentUsedSpace;
+int neededToDelete = required - currentFreeSpace;
+
+var x = directorySizes.OrderBy(d => d.Size).First(d => d.Size > neededToDelete);
+Console.WriteLine(x.Size);
+
+Console.WriteLine();
