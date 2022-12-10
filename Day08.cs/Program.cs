@@ -9,42 +9,23 @@ int visibleTreeCount = 0;
 visibleTreeCount += 2 * (colBound + 1); // top & bottom edges
 visibleTreeCount += 2 * (rowBound - 1); // left & right edges (excluding the top & bottom)
 
-Console.WriteLine(visibleTreeCount);
-
 // check all inner trees
 for (int row = 1; row < rowBound; row++)
 {
     for (int col = 1; col < colBound; col++)
     {
         int thisTree = forest[row, col];
-
         var thisRowToEastEdge = Enumerable.Range(0, col).Select(c => forest[row, c]).ToArray();
-        if (IsHigher(thisTree, thisRowToEastEdge))
-        {
-            visibleTreeCount++;
-            continue;
-        }
+        Array.Reverse(thisRowToEastEdge);
 
         var thisRowToWestEdge = Enumerable.Range(col + 1, colBound - col).Select(c => forest[row, c]).ToArray();
-        if (IsHigher(thisTree, thisRowToWestEdge))
-        {
-            visibleTreeCount++;
-            continue;
-        }
 
         var thisColToNorthEdge = Enumerable.Range(0, row).Select(r => forest[r, col]).ToArray();
-        if (IsHigher(thisTree, thisColToNorthEdge))
-        {
-            visibleTreeCount++;
-            continue;
-        }
+        Array.Reverse(thisRowToEastEdge);
 
         var thisRowToSouthEdge = Enumerable.Range(row + 1, rowBound - row).Select(r => forest[r, col]).ToArray();
-        if (IsHigher(thisTree, thisRowToSouthEdge))
-        {
-            visibleTreeCount++;
-            continue;
-        }
+
+        visibleTreeCount += IsVisible(thisTree, thisRowToEastEdge, thisColToNorthEdge, thisRowToWestEdge, thisRowToSouthEdge);
     }
 }
 
@@ -89,12 +70,22 @@ int[,] LoadForest(string inputFile)
     return forest;
 }
 
-bool IsHigher(int tree, int[] treeList)
+int IsVisible(int tree, int[] fromEast, int[] fromNorth, int[] fromWest, int[] fromSouth)
 {
-    return tree > treeList.Max();
+    if (tree > fromEast.Max()) return 1;
+    if (tree > fromNorth.Max()) return 1;
+    if (tree > fromWest.Max()) return 1;
+    if (tree > fromSouth.Max()) return 1;
+
+    return 0;
 }
 
 int GetScenicScore(int tree, int[] treeList)
 {
+    foreach (int s in treeList)
+    {
+        if (tree >= s) return s + 1;
+    }
+
     return 0;
 }
