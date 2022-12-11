@@ -104,7 +104,7 @@
             "program": "${workspaceFolder}/Day09.cs/bin/Debug/net7.0/Day09.dll",
             "args": [],
             "cwd": "${workspaceFolder}/Day09.cs",
-            "console": "internalConsole",
+            "console": "integratedTerminal",
             "stopAtEntry": false
         }
     ]
