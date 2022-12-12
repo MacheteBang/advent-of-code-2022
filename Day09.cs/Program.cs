@@ -1,7 +1,9 @@
 ﻿string[] lines = File.ReadAllLines("input.example.txt");
 
-CoordinateSet head = new();
-CoordinateSet tail = new();
+int segments = 10;
+
+CoordinateSet[] snake = new CoordinateSet[segments];
+snake[0] = new CoordinateSet(0, 0);
 
 double maxDistance = Math.Sqrt(2);
 
@@ -9,77 +11,82 @@ List<CoordinateSet> tailHistory = new() { new CoordinateSet(0, 0) };
 
 foreach (string line in lines)
 {
-    string direction = line.Split(" ")[0];
-    int steps = Convert.ToInt32(line.Split(" ")[1]);
+    string headDirection = line.Split(" ")[0];
+    int headDistance = Convert.ToInt32(line.Split(" ")[1]);
 
-    for (int i = 1; i <= steps; i++)
+    for (int i = 1; i <= headDistance; i++)
     {
-        CoordinateSet previousHead = head.Clone();
+        CoordinateSet previousSegment;
+        previousSegment = snake[0].Clone();
+        MoveSegment(ref snake[0], headDirection);
 
-        switch (direction)
+        for (int j = 1; j <= segments - 1; j++)
         {
-            case "U":
-                head.Y--;
-                break;
-            case "D":
-                head.Y++;
-                break;
-            case "R":
-                head.X++;
-                break;
-            case "L":
-                head.X--;
-                break;
-            default:
-                break;
+            snake[j] = snake[j] ?? new CoordinateSet(0, 0);
+
+            if (snake[j].DistanceTo(snake[j - 1]) > maxDistance)
+            {
+                CoordinateSet tmp = snake[j].Clone();
+                snake[j] = previousSegment;
+                previousSegment = tmp;
+            }
         }
 
-        if (tail.DistanceTo(head) > maxDistance)
-        {
-            tail = previousHead;
-            tailHistory.Add(tail);
-        }
+        if (tailHistory.FirstOrDefault(t => t.X == snake[segments - 1].X && t.Y == snake[segments-1].Y) is null)
+            tailHistory.Add(snake[segments - 1].Clone());
 
-        //PrintMap(head, tail);
+
+        PrintMap(snake);
+        var a = 1;
     }
 }
 
-Console.WriteLine(tailHistory.DistinctBy(c => c.ToString()).Count());
+Console.WriteLine(tailHistory.Count());
+Console.WriteLine("Done!");
+
+
+
+void MoveSegment(ref CoordinateSet segment, string direction)
+{
+    switch (direction)
+    {
+        case "U":
+            segment.Y--;
+            break;
+        case "D":
+            segment.Y++;
+            break;
+        case "R":
+            segment.X++;
+            break;
+        case "L":
+            segment.X--;
+            break;
+        default:
+            break;
+    }
+}
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-void PrintMap(CoordinateSet head, CoordinateSet tail)
+void PrintMap(CoordinateSet[] snake)
 {
     string map = "";
 
-    int gridDimension = 40;
+    int gridDimension = 10;
     Console.Clear();
     for (int y = -gridDimension; y <= gridDimension; y++)
     {
         for (int x = -gridDimension; x <= gridDimension; x++)
         {
-            CoordinateSet currentLocation = new CoordinateSet() { X = x, Y = y };
+            CoordinateSet? j = snake.FirstOrDefault(s => x == s.X && y == s.Y);
 
-            if (tail == currentLocation)
+            if (j is not null)
             {
-                map += "T";
-                continue;
-            }
-
-            if (head == currentLocation)
-            {
-                map += "H";
+                map += Array.IndexOf(snake, j);
                 continue;
             }
 
@@ -90,5 +97,4 @@ void PrintMap(CoordinateSet head, CoordinateSet tail)
     }
 
     Console.WriteLine(map);
-    Thread.Sleep(1000);
 }
